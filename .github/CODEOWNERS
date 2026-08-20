@@ -1,0 +1,5 @@
+# Arquivos CONFIAVEIS: exigem revisao do dono. Jobs da fabrica NAO podem altera-los.
+/.github/workflows/   @fenix-234
+/.github/CODEOWNERS    @fenix-234
+/factory_control/      @fenix-234
+/trusted_tests/        @fenix-234
