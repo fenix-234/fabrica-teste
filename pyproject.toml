@@ -15,6 +15,10 @@ packages = ["src/soma"]
 
 [tool.ruff]
 line-length = 100
+extend-exclude = ["factory_control", "trusted_tests", ".github", "dist"]
+
+[tool.pyright]
+include = ["src", "tests"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
