@@ -25,4 +25,4 @@ testpaths = ["tests"]
 pythonpath = ["src"]
 
 [dependency-groups]
-dev = ["ruff", "pyright", "bandit", "pip-audit"]
+dev = ["ruff", "pyright", "bandit", "pip-audit", "pytest"]
