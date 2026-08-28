@@ -18,13 +18,19 @@ Este é o fato central e ele muda o resto do trabalho:
 
 **Conclusão:** ninguém pode entregar essa resposta consultando um mapa pronto. Ela se obtém de duas formas, e as duas estão neste documento: **(a)** calculando a partir da base de ERBs da ANATEL, **(b)** medindo em campo. A modelagem prioriza onde medir; a medição calibra a modelagem.
 
-### 1.2 Limitação desta sessão
+### 1.2 Limitação desta sessão — bloqueio confirmado
 
-Tentei baixar a base de ERBs aqui e **os hosts `dados.gov.br` e `anatel.gov.br` estão bloqueados pela política de egresso desta sessão** (o proxy respondeu 403 ao CONNECT). Portanto:
+Tentei baixar a base de ERBs e **todos os hosts de dados estão bloqueados pela política de egresso da organização**. O gateway responde 403 ao CONNECT. Hosts testados, todos negados:
+
+`dados.gov.br` · `gov.br` · `www.gov.br` · `anatel.gov.br` · `www.anatel.gov.br` · `sistemas.anatel.gov.br` · `dadosabertos.anatel.gov.br` · `mosaico.anatel.gov.br` · `opencellid.org` · `download.opencellid.org` · `overpass-api.de` · `huggingface.co`
+
+Só o GitHub passa. Não há caminho alternativo confiável: um espelho não oficial da base da ANATEL tem procedência e data desconhecidas, e num estudo que orienta resgate isso é pior do que não rodar. Portanto:
 
 - Os **números de física** deste documento são calculados, reais e reproduzíveis — estão em `tools/cobertura/fisica.py`.
 - A **classificação por spot** abaixo é um **prior geográfico**, não uma medição. Ela existe para ordenar a fila de medição, não para ser citada como resultado.
-- O **pipeline que produz o resultado real** está pronto em `tools/cobertura/estimar_cobertura.py` e roda assim que a base da ANATEL for baixada em uma máquina com acesso.
+- O **pipeline que produz o resultado real** está pronto, testado e medido em escala real — ver seção 4.3. Roda assim que a base da ANATEL for baixada em uma máquina com acesso.
+
+Para destravar aqui dentro, basta liberar `dados.gov.br` na política de rede do ambiente (Claude Code na web → configuração do ambiente → política de egresso). Com o host liberado, o download e a execução levam poucos minutos.
 
 ---
 
@@ -212,9 +218,44 @@ python3 estimar_cobertura.py --erb ... --spots ... \
 
 Saídas: um CSV ordenado do pior para o melhor e um GeoJSON com os pontos e os círculos de alcance, para abrir direto no QGIS.
 
-### 4.3 Limitações do modelo, declaradas
+### 4.3 O pipeline foi testado em escala real
 
-- O alcance útil no mar é calculado como *alcance da ERB menos a distância dela até o spot*. Isso vale quando a torre está atrás da praia; para torre lateral, superestima. Refinamento: usar o azimute real da antena e o setor.
+Como não dá para rodar sobre a base verdadeira nesta sessão, validei a máquina de duas formas.
+
+**Testes unitários** — `tools/cobertura/tests/test_fisica.py`, 40 asserções, todas passando:
+
+| Grupo | O que verifica |
+|---|---|
+| Horizonte de rádio | 26,3 km para torre de 30 m e usuário a 0,8 m; 48,4 km para torre de 100 m e barco |
+| Orçamento de enlace | EIRP por resource element de 29,2 dBm e orçamento de 121,2 dB |
+| Alcance | Dois raios, espaço livre e breakpoint conferem com o cálculo à mão |
+| Invariantes físicas | Dobrar a torre multiplica o alcance por √2; dobrar a frequência corta o espaço livre pela metade; −12 dB corta o alcance de dois raios pela metade |
+| Atenuação de setor | Lobo principal, lateral, costas e a passagem por 360° |
+| Geometria | Ida e volta de rumo e distância fecham em 10 m; azimutes cardeais exatos |
+| Leitura | Decimal com vírgula, grau-minuto-segundo, BOM em UTF-8 e em latin-1, linhas sujas descartadas, EIRP calculado de potência e ganho |
+
+**Teste de carga** — arquivo sintético de **3 milhões de linhas (356 MB)** no formato do extrato da ANATEL, com todas as armadilhas do arquivo real: delimitador `;`, decimal com vírgula, acentuação em latin-1, BOM no cabeçalho, coordenadas zeradas e campos vazios.
+
+| Medida | Resultado |
+|---|---|
+| Leitura e filtragem de 3 milhões de linhas | **20 s** |
+| Análise dos 51 spots | **6,9 s** |
+| Tempo total | **33 s** |
+| Pico de memória | **423 MB** |
+| Linhas sujas descartadas | 480, sem interromper |
+| Encoding latin-1 | detectado e tratado automaticamente |
+| Entrada `.csv.gz` | funciona |
+| Filtro `--uf CE,PI` | funciona |
+
+O teste encontrou um defeito real: o BOM no cabeçalho impedia o mapeamento da coluna de operadora. Corrigido e coberto por teste.
+
+> Os **números de cobertura** desse teste são sem sentido geográfico — os dados são inventados. O que ele prova é que a máquina aguenta o arquivo verdadeiro e não engasga nas suas irregularidades.
+
+### 4.4 Limitações do modelo, declaradas
+
+- O alcance útil no mar é calculado como *alcance da ERB menos a distância dela até o spot*. Isso vale quando a torre está atrás da praia; para torre lateral, superestima.
+- O azimute da antena é levado em conta: 0 dB no lobo principal (±60°), −12 dB na lateral, −20 dB nas costas. Isso só é justo porque a base da ANATEL traz **uma linha por setor** — um site de três setores aparece três vezes e sempre há um apontando para o alvo. Se a base vier consolidada em uma linha por site, rodar com `--sem-azimute`, senão o resultado fica pessimista demais.
+- O EIRP vem de potência e ganho quando a base informa, com sanidade entre 30 e 75 dBm; cai para 60 dBm quando não informa.
 - Não considera relevo entre a torre e a linha d'água (falésia, duna alta, morro). Sobre o mar isso não existe, mas no primeiro trecho pode existir.
 - Não considera carga de rede: uma célula lotada num feriado tem alcance útil menor.
 - Não considera duto de evaporação, que ocasionalmente estende o alcance muito além do horizonte — e é justamente por ser ocasional que não pode ser usado como premissa de segurança.
