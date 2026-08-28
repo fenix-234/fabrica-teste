@@ -1,0 +1,52 @@
+id,nome,uf,lat,lon,tipo,perfil_uso,prior
+MA01,Atins,MA,-2.5787,-42.7369,mar_aberto+rio,downwind_lencois,alta
+MA02,Caburé / Barra do Preguiças,MA,-2.5350,-42.7000,barra_de_rio,downwind_lencois,alta
+MA03,Barreirinhas,MA,-2.7550,-42.8250,rio,flat_rio,media
+MA04,Tutóia / Delta do Parnaíba,MA,-2.7619,-42.2747,delta_ilhas,downwind_delta,alta
+PI01,Barra Grande (Cajueiro da Praia),PI,-2.9107,-41.3346,mar_aberto,freeride,alta
+PI02,Lagoa da Barrinha,PI,-2.9250,-41.3500,lagoa,flat,baixa
+CE01,Camocim,CE,-2.9020,-40.8410,mar_aberto+barra,downwind,media
+CE02,Tatajuba,CE,-2.9106,-40.7167,mar_aberto+lagoa,downwind,alta
+CE03,Guriú,CE,-2.8358,-40.5772,mar_aberto+mangue,downwind,alta
+CE04,Jericoacoara,CE,-2.7961,-40.5137,mar_aberto,freeride,alta
+CE05,Preá,CE,-2.8161,-40.4269,mar_aberto,freeride,alta
+CE06,Icaraí de Amontada,CE,-3.0272,-39.6386,mar_aberto,freeride,alta
+CE07,Ilha do Guajiru,CE,-3.0975,-39.4022,lagoa+mar,flat,media
+CE08,Fleixeiras / Mundaú,CE,-3.2200,-39.2600,mar_aberto,downwind,media
+CE09,Paracuru,CE,-3.4100,-39.0300,mar_aberto,freeride,media
+CE10,Taíba,CE,-3.5028,-38.9314,mar_aberto,freeride,media
+CE11,Cumbuco / Lagoa do Cauípe,CE,-3.6386,-38.7550,mar_aberto+lagoa,freeride,media
+CE12,Fortaleza (Praia do Futuro),CE,-3.7392,-38.4611,mar_aberto,freeride,baixa
+CE13,Águas Belas (Cascavel),CE,-4.1333,-38.2333,mar_aberto+rio,freeride,media
+CE14,Icapuí / Redonda,CE,-4.7128,-37.3550,mar_aberto,freeride,alta
+RN01,Galinhos,RN,-5.0917,-36.2750,peninsula+estuario,freeride,alta
+RN02,São Miguel do Gostoso,RN,-5.1200,-35.6350,mar_aberto,freeride,media
+RN03,Maracajaú,RN,-5.4500,-35.2500,mar_aberto+recife,freeride,media
+RN04,Tibau do Sul / Pipa,RN,-6.2278,-35.0489,mar_aberto,wave,media
+PB01,Cabedelo / Praia do Jacaré,PB,-6.9800,-34.8400,rio+mar,freeride,baixa
+PE01,Porto de Galinhas,PE,-8.5083,-35.0083,mar_aberto+recife,freeride,baixa
+AL01,Maragogi,AL,-9.0122,-35.2222,mar_aberto+recife,freeride,media
+SE01,Aracaju / Atalaia,SE,-10.9472,-37.0731,mar_aberto,freeride,baixa
+BA01,Praia do Forte,BA,-12.5786,-37.9958,mar_aberto,freeride,media
+BA02,Salvador / Itapuã,BA,-12.9500,-38.3500,mar_aberto,freeride,baixa
+BA03,Serra Grande / Itacaré,BA,-14.4667,-39.0333,mar_aberto,wave,alta
+BA04,Cumuruxatiba / Prado,BA,-17.3400,-39.2200,mar_aberto,freeride,alta
+ES01,Guarapari,ES,-20.6667,-40.5000,mar_aberto,freeride,baixa
+ES02,Itaúnas,ES,-18.4200,-39.7300,mar_aberto+rio,freeride,alta
+RJ01,Búzios / Praia Rasa,RJ,-22.7500,-41.9833,mar_aberto,freeride,media
+RJ02,Cabo Frio / Praia do Forte,RJ,-22.9000,-42.0167,mar_aberto,freeride,baixa
+RJ03,Lagoa de Araruama,RJ,-22.8667,-42.3333,lagoa,flat,baixa
+RJ04,Barra da Tijuca,RJ,-23.0100,-43.3650,mar_aberto,freeride,baixa
+RJ05,Restinga da Marambaia,RJ,-23.0500,-43.8500,mar_aberto_restrito,downwind,alta
+SP01,Praia Grande,SP,-24.0000,-46.4167,mar_aberto,freeride,baixa
+SP02,Ilha Comprida,SP,-24.7500,-47.5500,mar_aberto,downwind,alta
+PR01,Ilha do Mel,PR,-25.5167,-48.3167,ilha,freeride,alta
+PR02,Guaratuba,PR,-25.8833,-48.5667,baia+mar,freeride,media
+SC01,Lagoa da Conceição,SC,-27.6000,-48.4500,lagoa,flat,baixa
+SC02,Barra de Ibiraquera,SC,-28.1000,-48.6333,lagoa+mar,wave,media
+SC03,Laguna / Farol de Santa Marta,SC,-28.4833,-48.7833,mar_aberto,wave,alta
+RS01,Torres,RS,-29.3350,-49.7278,mar_aberto,freeride,media
+RS02,Tramandaí / Cidreira,RS,-30.0000,-50.1333,mar_aberto,freeride,media
+RS03,Lagoa dos Patos (São Lourenço),RS,-31.3650,-51.9783,lagoa_gigante,flat,alta
+RS04,Praia do Cassino,RS,-32.1833,-52.1667,mar_aberto,downwind,alta
+RS05,Barra do Chuí,RS,-33.7000,-53.3700,mar_aberto,freeride,alta
