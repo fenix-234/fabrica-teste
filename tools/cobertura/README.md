@@ -5,6 +5,7 @@ Estimativa de alcance do sinal celular sobre o mar, a partir de cada spot.
 | Arquivo | O que é |
 |---|---|
 | `fisica.py` | Calcula as tabelas de horizonte de rádio, orçamento de enlace e Fresnel. Roda sozinho, sem dados externos. |
+| `comparar_tecnologias.py` | Compara LTE, LoRa, AIS-MOB, HaLow e satélite no mesmo modelo: alcance, capacidade, custo por sessão e malha entre praticantes. Roda sozinho. |
 | `estimar_cobertura.py` | Pipeline principal. Consome a base de ERBs da ANATEL + a lista de spots e produz CSV e GeoJSON. |
 | `spots_brasil.csv` | 51 spots de kite/wing do litoral brasileiro, com coordenada aproximada e perfil de uso. |
 | `fixtures/erb_exemplo.csv` | Base falsa de 7 ERBs, só para verificar que o pipeline roda. **Não usar como dado.** |
@@ -25,6 +26,7 @@ python3 estimar_cobertura.py --erb /tmp/sintetico.csv --spots spots_brasil.csv
 
 ```bash
 python3 fisica.py                     # tabelas de física, sem dependências
+python3 comparar_tecnologias.py       # comparação entre tecnologias de enlace
 
 python3 estimar_cobertura.py \
   --erb Estacoes_Licenciadas_SMP.csv \
