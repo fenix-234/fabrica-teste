@@ -176,7 +176,7 @@ O dispositivo passa a ser **LoRa primário com LTE-M oportunista**, e não o con
 
 Nenhum destes números substitui campo. Ensaios, em ordem de valor:
 
-1. **Ensaio LoRa de alcance** — um gateway no ponto mais alto disponível do spot piloto e um nó no arnês do praticante, registrando RSSI, SNR e SF por posição. Confirma ou derruba os 26 km. Custo: um gateway e dois nós, menos de R$ 3 mil.
+1. **Ensaio LoRa de alcance** — um gateway no ponto mais alto disponível do spot piloto e um nó no arnês do praticante, registrando RSSI, SNR e SF por posição. Confirma ou derruba os 26 km. Kit de rádio a partir de R$ 3,1 mil; o dia completo, com mastro, barco e segurança, sai por cerca de R$ 11 mil. **Plano detalhado em `docs/05-ENSAIO-LORA.md`.**
 2. **Ensaio de capacidade** — 20 nós transmitindo juntos, medindo taxa de entrega por SF. Valida a tabela da seção 4.
 3. **Ensaio de perda por corpo** — o mesmo nó no braço, no colete e submerso, com o gateway fixo. Mede os 10 dB assumidos, que são o parâmetro mais incerto de todo o modelo.
 4. **Ensaio NTN** — um módulo NB-IoT NTN no spot de sombra, medindo tempo até o primeiro fix e taxa de entrega ao longo do dia.
