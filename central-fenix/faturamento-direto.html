@@ -1,0 +1,408 @@
+<title>Faturamento Direto Mateus</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --bg:#EEF1F3; --panel:#FFFFFF; --panel2:#F5F7F8; --field:#FFFFFF;
+    --ink:#131A1D; --ink2:#4A5A62; --ink3:#7A8A92; --line:#D6DEE1; --line2:#C2CDD2;
+    --accent:#0B6E68; --accent2:#0E8A82; --accentInk:#FFFFFF;
+    --amber:#8A5709; --amberbg:#FBF1DE; --amberline:#E4C48A;
+    --steel:#3B5566;
+    --shadow:0 1px 2px rgba(19,26,29,.05), 0 10px 30px -20px rgba(19,26,29,.55);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --bg:#0C1214; --panel:#141D20; --panel2:#1B262A; --field:#0F1719;
+      --ink:#E9EFF1; --ink2:#AEC0C6; --ink3:#7B8E96; --line:#283539; --line2:#35464C;
+      --accent:#4FBEB5; --accent2:#63CEC5; --accentInk:#06201F;
+      --amber:#DFAF63; --amberbg:#241C0E; --amberline:#4A3A1C;
+      --steel:#8FA9B8;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 32px -22px #000;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0C1214; --panel:#141D20; --panel2:#1B262A; --field:#0F1719;
+    --ink:#E9EFF1; --ink2:#AEC0C6; --ink3:#7B8E96; --line:#283539; --line2:#35464C;
+    --accent:#4FBEB5; --accent2:#63CEC5; --accentInk:#06201F;
+    --amber:#DFAF63; --amberbg:#241C0E; --amberline:#4A3A1C;
+    --steel:#8FA9B8;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 32px -22px #000;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:Inter,"Segoe UI",system-ui,sans-serif; line-height:1.5;
+    padding:clamp(18px,4vw,44px) clamp(14px,4vw,32px) 40px;
+  }
+  .wrap{max-width:660px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+  h1,h2{font-family:Archivo,system-ui,sans-serif;margin:0;letter-spacing:-.02em;text-wrap:balance}
+  h1{font-size:clamp(24px,4.6vw,32px);font-weight:800;line-height:1.08}
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  header{display:flex;flex-direction:column;gap:7px}
+  .eyebrow{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  header p{margin:0;color:var(--ink2);font-size:14.5px;max-width:58ch}
+
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+  .panel > h2{
+    font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);
+    padding:15px 18px 0;font-family:"IBM Plex Mono",monospace;
+  }
+  .body{padding:14px 18px 18px;display:flex;flex-direction:column;gap:14px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:520px){.row{grid-template-columns:1fr}}
+
+  .f{display:flex;flex-direction:column;gap:5px}
+  label{font-size:12.5px;font-weight:600;color:var(--ink2);letter-spacing:.01em}
+  label .opt{font-weight:400;color:var(--ink3)}
+  input,select,textarea{
+    font-family:inherit;font-size:15px;color:var(--ink);background:var(--field);
+    border:1px solid var(--line2);border-radius:9px;padding:10px 11px;width:100%;
+    transition:border-color .12s, box-shadow .12s;
+  }
+  textarea{resize:vertical;min-height:64px;line-height:1.45}
+  select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink3) 50%),linear-gradient(135deg,var(--ink3) 50%,transparent 50%);background-position:calc(100% - 17px) 50%,calc(100% - 12px) 50%;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+  input.falta,select.falta{border-color:#C4553B}
+  .hint{font-size:12px;color:var(--ink3);line-height:1.45}
+  .hint b{color:var(--ink2);font-weight:600}
+
+  .dest{display:flex;flex-direction:column;gap:9px}
+  .chip{
+    display:flex;align-items:center;gap:9px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:9px;padding:9px 12px;font-size:13.5px;
+  }
+  .chip .tipo{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;letter-spacing:.1em;color:var(--accentInk);background:var(--accent);border-radius:4px;padding:2px 6px;flex-shrink:0}
+  .chip .tipo.cc{background:var(--steel)}
+  .chip .end{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink2);word-break:break-all}
+  .chip .quem{color:var(--ink3);font-size:12px;margin-left:auto;flex-shrink:0}
+  @media(max-width:460px){.chip .quem{display:none}}
+  .fixo{opacity:.92}
+  .checkline{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink2);padding-left:2px}
+  .checkline input{width:auto;accent-color:var(--accent)}
+
+  .obs{
+    background:var(--amberbg);border:1px solid var(--amberline);border-radius:12px;
+    padding:14px 16px;display:flex;flex-direction:column;gap:9px;
+  }
+  .obs h3{margin:0;font-size:12px;font-family:"IBM Plex Mono",monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--amber);font-weight:600}
+  .obs ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;font-size:13.5px;color:var(--ink2)}
+  .obs b{color:var(--ink)}
+
+  .previa{
+    background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:14px 15px;
+    font-family:"IBM Plex Mono",monospace;font-size:12.5px;line-height:1.6;color:var(--ink2);
+    white-space:pre-wrap;word-break:break-word;
+  }
+  .assunto{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:9px 12px;word-break:break-word}
+
+  .acoes{display:flex;gap:10px;flex-wrap:wrap}
+  button{font-family:inherit;font-size:15px;font-weight:600;border-radius:10px;padding:12px 20px;border:1px solid transparent;cursor:pointer;transition:transform .08s,background .12s,border-color .12s}
+  button:active{transform:translateY(1px)}
+  button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .primario{background:var(--accent);color:var(--accentInk);flex:1 1 220px}
+  .primario:hover{background:var(--accent2)}
+  .secundario{background:transparent;color:var(--ink2);border-color:var(--line2)}
+  .secundario:hover{border-color:var(--accent);color:var(--accent)}
+  .aviso{font-size:12.5px;color:var(--ink3);min-height:18px}
+  .aviso.erro{color:#C4553B}
+  .aviso.ok{color:var(--accent)}
+  footer{font-size:12px;color:var(--ink3);text-align:center;line-height:1.6}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Central Fênix · Suprimentos</span>
+    <h1>Faturamento Direto — Grupo Mateus</h1>
+    <p>Preencha, confira a prévia e envie. Ingrid e a Fênix já entram fixos; o terceiro e-mail é o da empresa que vai faturar.</p>
+  </header>
+
+  <section class="panel">
+    <h2>1 · Contrato e obra</h2>
+    <div class="body">
+      <div class="row">
+        <div class="f">
+          <label for="contrato">Contrato</label>
+          <select id="contrato"></select>
+        </div>
+        <div class="f">
+          <label for="contratoLivre">Número do contrato</label>
+          <input id="contratoLivre" class="mono" placeholder="CTFD/000" autocomplete="off">
+        </div>
+      </div>
+      <div class="f">
+        <label for="obra">Obra</label>
+        <input id="obra" placeholder="Ex.: Farma Maracanã" autocomplete="off">
+      </div>
+      <p class="hint">⚠️ <b>O número do contrato muda conforme o serviço.</b> Serralheria, cobertura, telha e locação têm contratos diferentes, mesmo na mesma obra — confira na última autorização recebida antes de enviar. CTFD é faturamento direto; CTS é contrato de serviço.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>2 · Empresa que vai faturar</h2>
+    <div class="body">
+      <div class="f">
+        <label for="fornecedor">Fornecedor</label>
+        <select id="fornecedor"></select>
+      </div>
+      <div class="row" id="linhaLivre" hidden>
+        <div class="f">
+          <label for="fornNome">Razão social</label>
+          <input id="fornNome" placeholder="Nome da empresa" autocomplete="off">
+        </div>
+        <div class="f">
+          <label for="fornEmail">E-mail da empresa</label>
+          <input id="fornEmail" class="mono" type="email" placeholder="contato@empresa.com.br" autocomplete="off">
+        </div>
+      </div>
+      <div class="f">
+        <label for="cnpj">CNPJ <span class="opt">(opcional)</span></label>
+        <input id="cnpj" class="mono" placeholder="00.000.000/0001-00" autocomplete="off">
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>3 · O que será comprado</h2>
+    <div class="body">
+      <div class="f">
+        <label for="objeto">Objeto</label>
+        <textarea id="objeto" placeholder="Ex.: telha trapezoidal branca conforme cotação em anexo"></textarea>
+      </div>
+      <div class="f">
+        <label for="valor">Valor total</label>
+        <input id="valor" class="mono" inputmode="decimal" placeholder="0.000,00" autocomplete="off">
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>4 · Destinatários</h2>
+    <div class="body">
+      <div class="dest">
+        <div class="chip fixo"><span class="tipo">PARA</span><span class="end">ingrid.moura@grupomateus.com</span><span class="quem">Suprimentos Mateus</span></div>
+        <div class="chip fixo"><span class="tipo cc">CC</span><span class="end">gteccom2@gmail.com</span><span class="quem">Fênix Metal</span></div>
+        <div class="chip" id="chipForn"><span class="tipo cc">CC</span><span class="end" id="chipFornEnd">—</span><span class="quem">Fornecedor</span></div>
+      </div>
+      <label class="checkline"><input type="checkbox" id="ccAdm"> Incluir ADM Fênix <span class="mono" style="font-size:12.5px">(admfenixm@gmail.com)</span></label>
+    </div>
+  </section>
+
+  <div class="obs">
+    <h3>Observações que o Mateus cobra</h3>
+    <ul>
+      <li>Vencimento do boleto somente nos dias <b>01, 10, 20 ou 30</b> — calendário de pagamentos.</li>
+      <li>O número do <b>PEDIDO</b> volta na autorização e precisa entrar na <b>descrição da nota fiscal</b>.</li>
+      <li><b>Anexe a cotação em PDF</b> no e-mail antes de enviar — sem ela a autorização não sai.</li>
+      <li>NF vai para o e-mail da obra ou <span class="mono">contrato.obras@grupomateus.com</span>, nunca para o comprador.</li>
+    </ul>
+  </div>
+
+  <section class="panel">
+    <h2>5 · Prévia do e-mail</h2>
+    <div class="body">
+      <div class="f">
+        <label>Assunto</label>
+        <div class="assunto" id="prevAssunto"></div>
+      </div>
+      <div class="f">
+        <label>Mensagem</label>
+        <div class="previa" id="prevCorpo"></div>
+      </div>
+      <div class="acoes">
+        <button class="primario" id="btnEnviar">Abrir no e-mail</button>
+        <button class="secundario" id="btnCopiar">Copiar texto</button>
+      </div>
+      <p class="aviso" id="aviso"></p>
+    </div>
+  </section>
+
+  <footer>Central Fênix · G DE F BRAGA METALMECANICA LTDA<br>O e-mail abre no seu aplicativo já preenchido — anexe a cotação e confira antes de disparar.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CONTRATOS = [
+    {c:"CTFD/227", o:"Farma Maracanã"},
+    {c:"CTFD/229", o:"CD Prime Spazio"},
+    {c:"CTS/1667",  o:"CD Eletro Maracanã"},
+    {c:"CTS/1740",  o:"Coberturas Auxiliares — Dark Store Barreirinhas"},
+    {c:"CTS/1758",  o:"Serralheria — Dark Store Barreirinhas"},
+    {c:"CTS/1764",  o:"Cobertura CD 81"}
+  ];
+  var FORNECEDORES = [
+    {n:"Ferronorte Tibiri",        e:"sebastianferronortetibiri@gmail.com"},
+    {n:"G Ferronorte",             e:"atendimento1@gferronorte.com.br"},
+    {n:"Ferronorte Araçagy",       e:"vendas1.fnaracagy@ferronorteslz.com.br"},
+    {n:"Brasrental (Raquel)",      e:"raquel.morais@brasrental.com"},
+    {n:"Brasrental (Fabiana)",     e:"fabiana.melo@brasrental.com"},
+    {n:"Nordeste Locações",        e:"faturamento@nordesteloc.com.br"},
+    {n:"A Paulistinha Tintas",     e:"vendasl6@apaulistinhatintas.com.br"},
+    {n:"Roque AC",                 e:"william@roqueac.com"}
+  ];
+  var PARA = "ingrid.moura@grupomateus.com";
+  var CC_FIXO = "gteccom2@gmail.com";
+  var CC_ADM = "admfenixm@gmail.com";
+  var CHAVE = "fenix.faturamento.direto";
+
+  var $ = function(id){ return document.getElementById(id); };
+  var contrato=$("contrato"), contratoLivre=$("contratoLivre"), obra=$("obra"),
+      fornecedor=$("fornecedor"), linhaLivre=$("linhaLivre"), fornNome=$("fornNome"),
+      fornEmail=$("fornEmail"), cnpj=$("cnpj"), objeto=$("objeto"), valor=$("valor"),
+      ccAdm=$("ccAdm"), chipFornEnd=$("chipFornEnd"), prevAssunto=$("prevAssunto"),
+      prevCorpo=$("prevCorpo"), aviso=$("aviso");
+
+  contrato.innerHTML = '<option value="">Selecione…</option>' +
+    CONTRATOS.map(function(x,i){ return '<option value="'+i+'">'+x.c+' — '+x.o+'</option>'; }).join('') +
+    '<option value="outro">Outro contrato…</option>';
+  fornecedor.innerHTML = '<option value="">Selecione…</option>' +
+    FORNECEDORES.map(function(x,i){ return '<option value="'+i+'">'+x.n+'</option>'; }).join('') +
+    '<option value="outro">Outra empresa…</option>';
+
+  function fornAtual(){
+    if(fornecedor.value === "outro") return {n:fornNome.value.trim(), e:fornEmail.value.trim()};
+    if(fornecedor.value === "") return {n:"", e:""};
+    return FORNECEDORES[+fornecedor.value];
+  }
+
+  function montar(){
+    var f = fornAtual();
+    var ct = contratoLivre.value.trim();
+    var ob = obra.value.trim();
+    var assunto = "Faturamento Direto - " + (ct || "CTFD/000") + " - " + (ob || "[OBRA]");
+
+    var linhas = [
+      "Boa tarde,",
+      "",
+      "Solicito autorização de Faturamento Direto conforme contrato " + (ct || "[CONTRATO]") + " - " + (ob || "[OBRA]") + ".",
+      ""
+    ];
+    var forn = "Fornecedor: " + (f.n || "[FORNECEDOR]");
+    if(cnpj.value.trim()) forn += " - CNPJ " + cnpj.value.trim();
+    linhas.push(forn);
+    linhas.push("Objeto: " + (objeto.value.trim() || "[OBJETO]"));
+    linhas.push("Valor total: R$ " + (valor.value.trim() || "[VALOR]"));
+    linhas.push("");
+    linhas.push("Cotação/orçamento em anexo.");
+    linhas.push("");
+    linhas.push("Coloco o fornecedor em cópia para acompanhamento da liberação do pedido.");
+    linhas.push("");
+    linhas.push("Atenciosamente,");
+    linhas.push("");
+    linhas.push("Glailton de Farias Braga");
+    linhas.push("G DE F BRAGA METALMECANICA LTDA - Fenix Metal");
+    linhas.push("gteccom5@gmail.com");
+
+    var cc = [CC_FIXO];
+    if(f.e) cc.push(f.e);
+    if(ccAdm.checked) cc.push(CC_ADM);
+
+    return {assunto:assunto, corpo:linhas.join("\n"), cc:cc, forn:f, contrato:ct, obra:ob};
+  }
+
+  function pintar(){
+    var m = montar();
+    prevAssunto.textContent = m.assunto;
+    prevCorpo.textContent = m.corpo;
+    chipFornEnd.textContent = m.forn.e || "— selecione o fornecedor —";
+    salvar();
+  }
+
+  function faltando(){
+    var m = montar(), faltas = [];
+    [[contratoLivre, m.contrato], [obra, m.obra], [objeto, objeto.value.trim()], [valor, valor.value.trim()]]
+      .forEach(function(par){
+        par[0].classList.toggle("falta", !par[1]);
+        if(!par[1]) faltas.push(par[0]);
+      });
+    var semForn = !m.forn.e;
+    (fornecedor.value === "outro" ? fornEmail : fornecedor).classList.toggle("falta", semForn);
+    if(semForn) faltas.push(fornecedor);
+    return faltas.length;
+  }
+
+  $("btnEnviar").addEventListener("click", function(){
+    if(faltando()){
+      aviso.className = "aviso erro";
+      aviso.textContent = "Faltam campos — os marcados em vermelho.";
+      return;
+    }
+    var m = montar();
+    var url = "mailto:" + encodeURIComponent(PARA) +
+      "?cc=" + encodeURIComponent(m.cc.join(",")) +
+      "&subject=" + encodeURIComponent(m.assunto) +
+      "&body=" + encodeURIComponent(m.corpo);
+    aviso.className = "aviso ok";
+    aviso.textContent = "E-mail aberto — anexe a cotação em PDF antes de enviar.";
+    window.location.href = url;
+  });
+
+  $("btnCopiar").addEventListener("click", function(){
+    var m = montar();
+    var texto = "Para: " + PARA + "\nCc: " + m.cc.join(", ") + "\nAssunto: " + m.assunto + "\n\n" + m.corpo;
+    var pronto = function(){ aviso.className = "aviso ok"; aviso.textContent = "Texto copiado."; };
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(texto).then(pronto, manual);
+    } else { manual(); }
+    function manual(){
+      var ta = document.createElement("textarea");
+      ta.value = texto; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand("copy"); pronto(); }
+      catch(e){ aviso.className = "aviso erro"; aviso.textContent = "Não deu para copiar — selecione o texto da prévia."; }
+      document.body.removeChild(ta);
+    }
+  });
+
+  contrato.addEventListener("change", function(){
+    if(contrato.value !== "" && contrato.value !== "outro"){
+      var x = CONTRATOS[+contrato.value];
+      contratoLivre.value = x.c; obra.value = x.o;
+    } else if(contrato.value === "outro"){
+      contratoLivre.value = ""; obra.value = ""; contratoLivre.focus();
+    }
+    pintar();
+  });
+
+  fornecedor.addEventListener("change", function(){
+    var outro = fornecedor.value === "outro";
+    linhaLivre.hidden = !outro;
+    if(outro) fornNome.focus();
+    pintar();
+  });
+
+  ["input","change"].forEach(function(ev){
+    [contratoLivre,obra,fornNome,fornEmail,cnpj,objeto,valor,ccAdm].forEach(function(el){
+      el.addEventListener(ev, pintar);
+    });
+  });
+
+  function salvar(){
+    try{
+      localStorage.setItem(CHAVE, JSON.stringify({
+        contrato:contrato.value, contratoLivre:contratoLivre.value, obra:obra.value,
+        fornecedor:fornecedor.value, fornNome:fornNome.value, fornEmail:fornEmail.value,
+        ccAdm:ccAdm.checked
+      }));
+    }catch(e){}
+  }
+  function carregar(){
+    var d = null;
+    try{ d = JSON.parse(localStorage.getItem(CHAVE) || "null"); }catch(e){ d = null; }
+    if(!d) return;
+    if(d.contrato) contrato.value = d.contrato;
+    if(d.contratoLivre) contratoLivre.value = d.contratoLivre;
+    if(d.obra) obra.value = d.obra;
+    if(d.fornecedor) fornecedor.value = d.fornecedor;
+    if(d.fornNome) fornNome.value = d.fornNome;
+    if(d.fornEmail) fornEmail.value = d.fornEmail;
+    ccAdm.checked = !!d.ccAdm;
+    linhaLivre.hidden = fornecedor.value !== "outro";
+  }
+
+  carregar();
+  pintar();
+})();
+</script>
