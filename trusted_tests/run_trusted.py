@@ -1,7 +1,12 @@
-"""trusted_tests/run_trusted.py — executa os testes de aceitacao CONFIAVEIS que vivem na main
-protegida (nao no conteudo modificavel do PR). Verifica o hash de cada teste contra o manifesto
-confiavel, roda por pytest e valida ESTRUTURALMENTE o junit (0 fail/err/skip inesperado; >0 testes).
-Arquivo CONFIAVEL (main; CODEOWNERS). Jobs da fabrica nao podem altera-lo."""
+"""trusted_tests/run_trusted.py — executa os testes de aceitacao CONFIAVEIS que vivem
+na main protegida. ESTRITO / FALHA FECHADO: exige que EXISTAM testes, exige o manifesto
+de integridade, verifica o hash de cada teste contra o manifesto e valida o junit
+ESTRUTURALMENTE (>0 testes; 0 fail/err/skip inesperado). Ausencia de teste OU de
+manifesto = ERRO (nunca 'ok, no-op').
+
+A integridade dos arquivos confiaveis (esta pasta) e garantida de forma autoritativa
+pela politica do diff executada a partir da main (factory-verify), que bloqueia qualquer
+alteracao em trusted_tests/. Arquivo CONFIAVEL (main; CODEOWNERS)."""
 import hashlib
 import json
 import os
@@ -24,17 +29,19 @@ def _hashes():
 
 
 def main():
-    if not os.path.isdir(ACEITE_DIR) or not _hashes():
-        # sem testes de aceitacao confiaveis definidos p/ este projeto: nao ha o que validar
-        print("run_trusted: nenhum teste de aceitacao confiavel definido (ok, no-op)")
-        return
     atuais = _hashes()
-    # verifica hashes contra o manifesto confiavel, se existir
-    if os.path.isfile(MANIFESTO):
-        esperado = json.load(open(MANIFESTO, encoding="utf-8")).get("testes", {})
-        if set(atuais) != set(esperado) or any(atuais[k] != esperado.get(k) for k in atuais):
-            print("TAMPER: testes de aceitacao confiaveis divergem do manifesto")
-            sys.exit(2)
+    if not atuais:
+        print("ERRO: nenhum teste de aceitacao confiavel definido em trusted_tests/aceite "
+              "(sem juiz independente, nada pode ser aprovado)")
+        sys.exit(1)
+    if not os.path.isfile(MANIFESTO):
+        print("ERRO: manifesto de integridade ausente (trusted_tests/manifesto.json); "
+              "nao ha como verificar os testes confiaveis")
+        sys.exit(1)
+    esperado = json.load(open(MANIFESTO, encoding="utf-8")).get("testes", {})
+    if set(atuais) != set(esperado) or any(atuais[k] != esperado.get(k) for k in atuais):
+        print("TAMPER: testes de aceitacao confiaveis divergem do manifesto")
+        sys.exit(2)
     rep = os.path.join(os.getcwd(), "reports", "junit_trusted.xml")
     os.makedirs(os.path.dirname(rep), exist_ok=True)
     rc = subprocess.call([sys.executable, "-I", "-m", "pytest", ACEITE_DIR, "-q",
@@ -46,7 +53,8 @@ def main():
     tests = int(ts.get("tests", "0")); fails = int(ts.get("failures", "0"))
     errs = int(ts.get("errors", "0")); skip = int(ts.get("skipped", "0"))
     ok = (tests > 0 and fails == 0 and errs == 0 and skip == 0)
-    print(f"run_trusted: tests={tests} fail={fails} err={errs} skip={skip} rc={rc} -> {'OK' if ok else 'FALHOU'}")
+    print(f"run_trusted: tests={tests} fail={fails} err={errs} skip={skip} rc={rc} "
+          f"-> {'OK' if ok else 'FALHOU'}")
     sys.exit(0 if ok else 1)
 
 
