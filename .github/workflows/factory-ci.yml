@@ -1,4 +1,7 @@
 name: factory-ci
+# ESTAGIO A (bancada NAO confiavel): executa e testa o conteudo do PR de forma isolada.
+# Roda a partir do PR -> seu resultado e INFORMATIVO. O veredito autoritativo (politica do
+# diff a partir da main) fica no workflow factory-verify (workflow_run), que o PR nao altera.
 on:
   pull_request:
     branches: [ "main" ]
@@ -12,42 +15,56 @@ jobs:
     runs-on: ubuntu-latest   # GitHub-hosted, descartavel (runner proprio e PROIBIDO)
     timeout-minutes: 30
     steps:
-      - name: checkout do PR
+      - name: checkout do PR (conteudo NAO confiavel)
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
           persist-credentials: false
 
-      - name: politica do diff (ANTES de instalar/rodar o projeto do PR)
-        run: python factory_control/validar_diff.py
-
       - name: instalar uv
         uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d  # v10.0.1
 
-      - name: dependencias travadas (rejeita git/url/path/nao-fixadas)
+      - name: detectar projeto python
+        id: proj
         run: |
-          test -f pyproject.toml || { echo "pyproject.toml ausente"; exit 1; }
+          if [ -f pyproject.toml ]; then
+            echo "python=1" >> "$GITHUB_OUTPUT"
+          else
+            echo "python=0" >> "$GITHUB_OUTPUT"
+            echo "sem pyproject.toml: repo em bootstrap (so controle) — toolchain pulada"
+          fi
+
+      - name: dependencias travadas (rejeita git/url/path/nao-fixadas)
+        if: steps.proj.outputs.python == '1'
+        run: |
           test -f uv.lock || { echo "uv.lock ausente"; exit 1; }
           uv sync --frozen
 
       - name: ruff (lint)
+        if: steps.proj.outputs.python == '1'
         run: uv run ruff check .
 
       - name: ruff (formatacao)
+        if: steps.proj.outputs.python == '1'
         run: uv run ruff format --check .
 
       - name: pyright (tipos)
+        if: steps.proj.outputs.python == '1'
         run: uv run pyright
 
       - name: bandit (seguranca)
+        if: steps.proj.outputs.python == '1' && hashFiles('src/**') != ''
         run: uv run bandit -q -r src
 
       - name: pip-audit (vulnerabilidades)
+        if: steps.proj.outputs.python == '1'
         run: uv run pip-audit
 
       - name: pytest
+        if: steps.proj.outputs.python == '1'
         run: uv run pytest -q --junitxml=reports/junit.xml
 
       - name: playwright (apps web)
+        if: steps.proj.outputs.python == '1'
         run: |
           if [ -f playwright.config.py ] || [ -d tests_web ]; then
             uv run playwright install --with-deps chromium
@@ -56,10 +73,11 @@ jobs:
             echo "sem interface web: pulando playwright"
           fi
 
-      - name: testes de aceitacao CONFIAVEIS (vem da main protegida, hash verificado)
-        run: python trusted_tests/run_trusted.py
+      - name: testes de aceitacao CONFIAVEIS (integridade verificada; veredito final em factory-verify)
+        run: uv run --with pytest python trusted_tests/run_trusted.py
 
       - name: build
+        if: steps.proj.outputs.python == '1'
         run: uv build
 
       - name: manifesto SHA-256

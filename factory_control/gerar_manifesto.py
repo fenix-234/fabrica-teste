@@ -1,5 +1,6 @@
-"""factory_control/gerar_manifesto.py — gera artifact-manifest.json com SHA-256 de cada arquivo
-publicado (dist/ e reports/). Registra commit, workflow run e Python. Arquivo CONFIAVEL (main)."""
+"""factory_control/gerar_manifesto.py — gera artifact-manifest.json com SHA-256 de cada
+arquivo publicado (dist/ e reports/). Registra commit, workflow run e repo. Nao inclui
+caminhos internos do runner. Arquivo CONFIAVEL (main)."""
 import hashlib
 import json
 import os
@@ -25,7 +26,6 @@ def main():
         "commit": os.environ.get("GITHUB_SHA", ""),
         "workflow_run": os.environ.get("GITHUB_RUN_ID", ""),
         "repo": os.environ.get("GITHUB_REPOSITORY", ""),
-        "python": os.environ.get("pythonLocation", ""),
         "arquivos_sha256": arquivos,
         "total": len(arquivos),
     }
