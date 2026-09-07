@@ -1,0 +1,62 @@
+name: factory-verify
+# ESTAGIO B (VEREDITO CONFIAVEL): dispara APOS o factory-ci e roda A PARTIR DA MAIN
+# (workflow_run sempre usa a versao do branch padrao, nunca a do PR). Por isso o PR NAO
+# consegue reescrever este inspetor. Aqui a politica do diff e AUTORITATIVA (fail-closed)
+# e publica um status confiavel 'fabrica/verificacao-confiavel' no commit do PR.
+on:
+  workflow_run:
+    workflows: ["factory-ci"]
+    types: [completed]
+permissions:
+  contents: read
+  statuses: write        # apenas para publicar o status confiavel no commit
+  actions: read
+concurrency:
+  group: factory-verify-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: true
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # so PRs (ignora pushes diretos etc.)
+    if: github.event.workflow_run.event == 'pull_request'
+    steps:
+      - name: checkout da MAIN confiavel (NAO do PR)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: buscar o commit do PR
+        run: git fetch --no-tags origin ${{ github.event.workflow_run.head_sha }}
+
+      - name: politica do diff (AUTORITATIVA, da main, fail-closed)
+        env:
+          FABRICA_BASE_REF: ${{ github.event.repository.default_branch }}
+          FABRICA_HEAD_REF: ${{ github.event.workflow_run.head_sha }}
+        run: python factory_control/validar_diff.py
+
+      - name: status confiavel = success
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/statuses/$SHA" \
+            -d '{"state":"success","context":"fabrica/verificacao-confiavel","description":"politica do diff OK (verificado a partir da main)"}'
+
+      - name: status confiavel = failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          curl -sS -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/statuses/$SHA" \
+            -d '{"state":"failure","context":"fabrica/verificacao-confiavel","description":"verificacao confiavel REPROVOU (ver logs de factory-verify)"}'
